@@ -38,4 +38,4 @@ En el evento de creaRoom, el servidor une el cliente a una sala nueva y se crea 
 segundo socket conectado.
 
 ##Layout
-![Visual](visual.png)
+![Visual](visual.JPG)
