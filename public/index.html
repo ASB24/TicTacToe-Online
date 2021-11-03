@@ -1,16 +1,116 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Tic Tac Toe Online</title>
-    <link href="style.css">
-    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js" integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs" crossorigin="anonymous"></script>
+    <head>
+        <title>Tic Tac Toe Online</title>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <div class = "title">
+            <h1>Tic Tac Toe</h1>
+        </div>
+        <center>
+        <h3 id = "gameStatus"></h3>
+        <div class = "body">
+            <div id='sizer'></div>
+            <div id='tictactoe'>
+                <button class="slot" value=0></button> <button class="slot" value=1></button> <button class="slot" value=2></button>
+                <button class="slot" value=3></button> <button class="slot" value=4></button> <button class="slot" value=5></button>
+                <button class="slot" value=6></button> <button class="slot" value=7></button> <button class="slot" value=8></button>
+            </div>
+        </div>
+        <div class = "menu">
+            <button class = 'menuBtns' id = "createGame">Create game</button>
+            <button class = 'menuBtns' id = "joinGame">Join game</button>
+            <button class = 'menuBtns' id = "pcGame">Play solo</button>
+        </div>
+        <div class="scoreboard">
+            <h2 id = 'player1'></h2>
+            <br>
+            <h2 id = 'player2'></h2>
+        </div>
+    </center>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script>var exports = {};</script>
+    <script src="tictactoe.js"></script>
     <script>
-        var socket = io();
+
+        $(function(){
+            window.socket = io();
+
+            socket.on('connect', () => {
+                console.log("Connected");
+            });
+
+            $('.slot').attr('disabled', true);
+
+            $('#createGame').click(function(){
+                var roomID = prompt( "Ingrese el codigo de sala:" );
+                var name = prompt("Nombre: ");
+                if(roomID != null){
+                    socket.emit('createRoom', roomID, name);
+                }
+            });
+
+            $('#joinGame').click(function(){
+                var roomID = prompt( "Ingrese el codigo de sala:" );
+                var name = prompt("Nombre");
+                if(roomID != null){
+                    socket.emit('joinRoom', roomID, name);
+                }
+            });
+
+            $('#pcGame').click(function(){
+                $('.menuBtns').hide();
+                socket.emit('soloPlayer');
+            });
+
+            socket.on('startGame', ({names, scores}) => {
+                $('.slot').removeAttr('disabled');
+                $('.slot').html("");
+                $('#player1').html(names[0] + ": " + scores[0]);
+                $('#player2').html(names[1] + ": " + scores[1]);
+                $('.menuBtns').hide();
+                $('.slot').html("");
+                boardTime(socket);
+            });
+
+            $(".slot").click(function(){
+                var value = $(this).attr("value");
+                setTimeout(socket.emit('slotClicked', value), 100);
+                //console.log("casilla presionada: " + value);
+            });
+            socket.on('clickResponse', (value, response) => {
+                if(response.allowed) {
+                    var slot = $(".slot[value = "+value+"]");
+                    slot.html(response.character);
+                }
+                //console.log("Se puede operar? " + response.allowed);
+            });
+
+            socket.on('cpuPlay', (value) => {
+                console.log("played: ", value);
+                $(".slot[value ="+value+"]").html("O");
+            });
+
+        });
+
+        function boardTime(socket){
+            window.setInterval(function(){
+                socket.emit("getBoard", (response) => {
+                    $(".slot[value = 1]").html(response[0]);
+                    $(".slot[value = 2]").html(response[1]);
+                    $(".slot[value = 3]").html(response[2]);
+                    $(".slot[value = 4]").html(response[3]);
+                    $(".slot[value = 5]").html(response[4]);
+                    $(".slot[value = 6]").html(response[5]);
+                    $(".slot[value = 7]").html(response[6]);
+                    $(".slot[value = 8]").html(response[7]);
+                    $(".slot[value = 9]").html(response[8]);
+                });
+            }, 50);
+        }
+
     </script>
-  </head>
-  <body>
-      <div class = "Title"></div>
-      <div class = "Body"></div>
-      <div class = "Footer"></div>
-  </body>
 </html>

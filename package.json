@@ -3,11 +3,12 @@
     "version": "1.0.0",
     "description": "Tic Tac Toe Game hosted in Heroku",
     "scripts": {
-        "start": "nodemon "
+        "start": "./public/index.ts"
     },
     "dependencies": {
         "express": "^4.17.1",
         "nodemon": "^2.0.14",
+        "requirejs": "^2.3.6",
         "sass": "^1.43.3",
         "socket.io": "^4.3.1",
         "socket.io-client": "^4.3.2",
