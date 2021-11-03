@@ -8,6 +8,7 @@ Para lograr que todos los clientes esten en la misma pagina en cuanto al tablero
 ![UML](diseno.png)
 
 ##Implementacion
+
 Como el programa entero es un conjunto de eventos y una interaccion constante cliente/servidor, no es propicio enseñar todas las iteraciones de uso de sockets, sin embargo se puede mostrar la conexion de los clientes.
 ```typescript
 socket.on('createRoom', (roomID : string, name : string) => {
